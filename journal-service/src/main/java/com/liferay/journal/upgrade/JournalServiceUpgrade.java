@@ -34,6 +34,7 @@ import com.liferay.journal.internal.upgrade.v0_0_5.UpgradePortletSettings;
 import com.liferay.journal.internal.upgrade.v0_0_6.UpgradeImageTypeContentAttributes;
 import com.liferay.journal.internal.upgrade.v1_0_0.UpgradeJournalArticleImage;
 import com.liferay.journal.internal.upgrade.v1_0_1.UpgradeJournalContentSearch;
+import com.liferay.journal.internal.upgrade.v1_0_2.UpgradeJournalDDMTemplateLinks;
 import com.liferay.journal.internal.upgrade.v1_1_0.UpgradeDocumentLibraryTypeContent;
 import com.liferay.journal.internal.upgrade.v1_1_0.UpgradeImageTypeContent;
 import com.liferay.journal.internal.upgrade.v1_1_0.UpgradeJournalArticleLocalizedValues;
@@ -132,7 +133,11 @@ public class JournalServiceUpgrade implements UpgradeStepRegistrator {
 			new UpgradeJournalContentSearch());
 
 		registry.register(
-			"com.liferay.journal.service", "1.0.1", "1.1.0",
+			"com.liferay.journal.service", "1.0.1", "1.0.2",
+			new UpgradeJournalDDMTemplateLinks(_ddmTemplateLinkLocalService));
+
+		registry.register(
+			"com.liferay.journal.service", "1.0.2", "1.1.0",
 			new UpgradeDocumentLibraryTypeContent(_dlAppLocalService),
 			new UpgradeImageTypeContent(_imageLocalService),
 			new UpgradeJournalArticleLocalizedValues());
