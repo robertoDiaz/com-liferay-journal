@@ -15,6 +15,7 @@
 package com.liferay.journal.internal.upgrade.v1_0_2;
 
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
+import com.liferay.dynamic.data.mapping.model.DDMTemplateLink;
 import com.liferay.dynamic.data.mapping.service.DDMTemplateLinkLocalService;
 import com.liferay.journal.model.JournalArticle;
 import com.liferay.portal.kernel.upgrade.UpgradeProcess;
@@ -30,54 +31,21 @@ import java.sql.ResultSet;
  */
 public class UpgradeJournalDDMTemplateLinks extends UpgradeProcess {
 
-	public UpgradeJournalDDMTemplateLinks(
-		DDMTemplateLinkLocalService ddmTemplateLinkLocalService) {
-
-		_ddmTemplateLinkLocalService = ddmTemplateLinkLocalService;
-	}
-
 	@Override
 	protected void doUpgrade() throws Exception {
 		try (LoggingTimer loggingTimer = new LoggingTimer()) {
-			long ddmStructureClassNameId = PortalUtil.getClassNameId(
-				DDMStructure.class.getName());
+			StringBundler sb = new StringBundler(6);
 
-			StringBundler sb = new StringBundler(4);
-
-			sb.append("select DDMTemplateLink.templateLinkId ");
-			sb.append("from DDMTemplateLink inner join JournalArticle on (");
+			sb.append("update DDMTemplateLink inner join JournalArticle on ");
 			sb.append("DDMTemplateLink.classPK = JournalArticle.id_ and ");
-			sb.append("DDMTemplateLink.classNameId = ?)");
+			sb.append("DDMTemplateLink.classNameId = ");
+			sb.append(PortalUtil.getClassNameId(DDMStructure.class.getName()));
+			sb.append(" set DDMTemplateLink.classNameId = ");
+			sb.append(
+				PortalUtil.getClassNameId(JournalArticle.class.getName()));
 
-			try (PreparedStatement ps1 = connection.prepareStatement(
-				sb.toString())) {
-
-				ps1.setLong(1, ddmStructureClassNameId);
-
-				try (ResultSet rs = ps1.executeQuery()) {
-					while (rs.next()) {
-						long templateLinkId = rs.getLong("templateLinkId");
-
-						try (PreparedStatement ps2 =
-							connection.prepareStatement(
-								"update DDMTemplateLink set classNameId = ? " +
-								"where templateLinkId = ?")) {
-
-							long journalArticleClassNameId =
-								PortalUtil.getClassNameId(
-									JournalArticle.class.getName());
-
-							ps2.setLong(1, journalArticleClassNameId);
-							ps2.setLong(2, templateLinkId);
-
-							ps2.executeUpdate();
-						}
-					}
-				}
-			}
+			runSQL(sb.toString());
 		}
 	}
-
-	private final DDMTemplateLinkLocalService _ddmTemplateLinkLocalService;
 
 }

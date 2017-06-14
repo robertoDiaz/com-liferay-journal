@@ -134,7 +134,7 @@ public class JournalServiceUpgrade implements UpgradeStepRegistrator {
 
 		registry.register(
 			"com.liferay.journal.service", "1.0.1", "1.0.2",
-			new UpgradeJournalDDMTemplateLinks(_ddmTemplateLinkLocalService));
+			new UpgradeJournalDDMTemplateLinks());
 
 		registry.register(
 			"com.liferay.journal.service", "1.0.2", "1.1.0",
